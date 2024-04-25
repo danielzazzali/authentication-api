@@ -1,8 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import './config/config';
+import { LoggingMiddleware } from './middleware/logging.middleware';
+
+const port = process.env.APP_PORT || 3000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+
+  app.enableCors();
+
+  const loggingMiddleware = new LoggingMiddleware();
+
+  app.use(loggingMiddleware.use.bind(loggingMiddleware));
+
+  await app.listen(port);
 }
-bootstrap();
+
+bootstrap()
+  .then(() => {
+    console.log(`App listening on http://localhost:${port}`);
+  })
+  .catch((err) => {
+    console.error(err);
+    setTimeout(() => {
+      process.exit(1);
+    }, 0);
+  });
