@@ -1,12 +1,13 @@
 # Payment API
 
-## Installation
+## Running the app locally
+
+### Installation
 
 ```bash
 $ npm install
 ```
-
-## Running the app
+### Start the app
 
 ```bash
 # development
@@ -19,7 +20,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+### Test the app
 
 ```bash
 # unit tests
@@ -34,19 +35,19 @@ $ npm run test:cov
 
 ## Docker
 
-## Build Docker Image
+### Build docker image
 
 ```bash
 docker build -t payment-api .
 ```
 
-## Run Docker Container
+### Run docker container
 
 ```bash
 docker run -p APP_PORT:APP_PORT payment-api
 ```
 
-## Stop Docker Container
+### Stop Docker Container
 
 Show running docker containers
 
@@ -54,7 +55,7 @@ Show running docker containers
 docker ps
 ```
 
-Replace CONTAINER_ID
+Replace CONTAINER_ID with the container id:
 
 ```bash
 docker stop CONTAINER_ID
