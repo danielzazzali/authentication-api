@@ -19,7 +19,7 @@ async function bootstrap() {
 
 bootstrap()
   .then(() => {
-    console.log(`App listening on http://localhost:${port}`);
+    console.log(`App listening on http://localhost:${port}\n`);
   })
   .catch((err) => {
     console.error(err);
