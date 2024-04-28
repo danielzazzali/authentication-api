@@ -1,7 +1,7 @@
 {
-  "name": "payment-api",
+  "name": "authentication-api",
   "version": "0.0.1",
-  "description": "Payment API",
+  "description": "Authentication API",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

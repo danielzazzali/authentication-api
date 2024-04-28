@@ -38,13 +38,13 @@ $ npm run test:cov
 ### Build docker image
 
 ```bash
-docker build -t payment-api .
+sudo docker build -t authentication-api .
 ```
 
 ### Run docker container
 
 ```bash
-docker run -p APP_PORT:APP_PORT payment-api
+sudo docker run -p APP_PORT:APP_PORT authentication-api
 ```
 
 ### Stop Docker Container
@@ -52,11 +52,11 @@ docker run -p APP_PORT:APP_PORT payment-api
 Show running docker containers
 
 ```bash
-docker ps
+sudo docker ps
 ```
 
 Replace CONTAINER_ID with the container id:
 
 ```bash
-docker stop CONTAINER_ID
+sudo docker stop CONTAINER_ID
 ```
