@@ -11,11 +11,11 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ValidateResetCodeDto } from './dto/validate-reset-code.dto';
-import { User } from '../user/entities/user.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ChangePasswordResponseDto } from './dto/change-password-response.dto';
 import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response.dto';
 import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 /**
  * AuthController is a controller that handles authentication related routes.
@@ -37,7 +37,7 @@ export class AuthController {
    * @throws {HttpException} If the user is not found, credentials are invalid, or an error occurs during login.
    */
   @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto): Promise<Partial<User>> {
+  async login(@Body() loginUserDto: LoginUserDto): Promise<AuthResponseDto> {
     try {
       return await this.authService.login(loginUserDto);
     } catch (error) {
@@ -65,7 +65,7 @@ export class AuthController {
    * @throws {HttpException} If the user already exists, or an error occurs during signup.
    */
   @Post('signup')
-  async signup(@Body() signupUserDto: SignupUserDto): Promise<Partial<User>> {
+  async signup(@Body() signupUserDto: SignupUserDto): Promise<AuthResponseDto> {
     try {
       return await this.authService.signup(signupUserDto);
     } catch (error) {

@@ -9,24 +9,26 @@ import { User } from './user.entity';
 
 @Entity('forgot_password')
 export class ForgotPassword {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ name: 'forgotPasswordId' })
+  forgotPasswordId: number;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ length: 6 })
+  @Column({ name: 'code', length: 6 })
   code: string;
 
-  @Column('timestamptz', { default: () => `now()` })
+  @Column({ name: 'createdAt', type: 'timestamptz', default: () => `now()` })
   createdAt: Date;
 
-  @Column('timestamptz', {
+  @Column({
+    name: 'validUntil',
+    type: 'timestamptz',
     default: () => `now() + INTERVAL '15 minutes'`,
   })
   validUntil: Date;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ name: 'isUsed', type: 'boolean', default: false })
   isUsed: boolean;
 }

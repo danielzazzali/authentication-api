@@ -19,6 +19,9 @@ import { ChangePasswordDto } from '../auth/dto/change-password.dto';
 import { ForgotPasswordResponseDto } from '../auth/dto/forgot-password-response.dto';
 import { ValidateResetCodeResponseDto } from '../auth/dto/validate-reset-code-response.dto';
 import { ChangePasswordResponseDto } from '../auth/dto/change-password-response.dto';
+import { AuthResponseDto } from '../auth/dto/auth-response.dto';
+import { TokenService } from '../token/token.service';
+import { PayloadJwt } from '../auth/dto/payload-jwt.dto';
 
 /**
  * UserService is a service that handles user related operations.
@@ -31,6 +34,7 @@ export class UserService {
    * @param {Repository<User>} userRepository - The user repository.
    * @param {Repository<ForgotPassword>} forgotPasswordRepository - The forgot password repository.
    * @param {NotificationService} notificationService - The notification service.
+   * @param tokenService - The token service.
    */
   constructor(
     @Inject('USER_REPOSITORY')
@@ -38,6 +42,7 @@ export class UserService {
     @Inject('FORGOT_PASSWORD_REPOSITORY')
     private forgotPasswordRepository: Repository<ForgotPassword>,
     private notificationService: NotificationService,
+    private tokenService: TokenService,
   ) {}
 
   /**
@@ -47,7 +52,7 @@ export class UserService {
    * @returns {Promise<Partial<User>>} The result of the signup operation.
    * @throws {Error} If the user already exists or an error occurs during signup.
    */
-  async signup(signupUserDto: SignupUserDto): Promise<Partial<User>> {
+  async signup(signupUserDto: SignupUserDto): Promise<AuthResponseDto> {
     const { email, rut } = signupUserDto;
 
     let existingUser = await this.userRepository.findOneBy({ email: email });
@@ -73,7 +78,7 @@ export class UserService {
     try {
       newUser = this.userRepository.create({
         ...signupUserDto,
-        hashed_password: hashedPassword,
+        hashedPassword: hashedPassword,
       });
 
       newUser = await this.userRepository.save(newUser);
@@ -81,12 +86,15 @@ export class UserService {
       throw new Error('Error creating or saving user in repository');
     }
 
-    return {
-      email: newUser.email,
-      first_name: newUser.first_name,
-      last_name: newUser.last_name,
-      rut: newUser.rut,
-    };
+    const payload = new PayloadJwt(
+      newUser.email,
+      newUser.firstName,
+      newUser.lastName,
+      newUser.rut,
+    );
+
+    const token = this.tokenService.encryptToken(payload);
+    return new AuthResponseDto(token);
   }
 
   /**
@@ -96,7 +104,7 @@ export class UserService {
    * @returns {Promise<Partial<User>>} The result of the login operation.
    * @throws {Error} If the user is not found or the credentials are invalid.
    */
-  async login(loginUserDto: LoginUserDto): Promise<Partial<User>> {
+  async login(loginUserDto: LoginUserDto): Promise<AuthResponseDto> {
     const { email, password } = loginUserDto;
 
     const user = await this.userRepository.findOneBy({ email: email });
@@ -104,17 +112,20 @@ export class UserService {
       throw new Error(`User with email ${email} not found`);
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
+    const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
     if (!passwordMatch) {
       throw new Error('Invalid credentials');
     }
 
-    return {
-      email: user.email,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      rut: user.rut,
-    };
+    const payload = new PayloadJwt(
+      user.email,
+      user.firstName,
+      user.lastName,
+      user.rut,
+    );
+
+    const token = this.tokenService.encryptToken(payload);
+    return new AuthResponseDto(token);
   }
 
   /**
@@ -181,7 +192,7 @@ export class UserService {
 
     const forgotPasswordRecord = await this.forgotPasswordRepository
       .createQueryBuilder('forgot_password')
-      .where('forgot_password.user = :user', { user: user.user_id })
+      .where('forgot_password.user = :user', { user: user.userId })
       .andWhere('forgot_password.code = :code', { code: code })
       .andWhere('forgot_password.isUsed = :isUsed', { isUsed: false })
       .orderBy('forgot_password.createdAt', 'DESC')
@@ -228,7 +239,7 @@ export class UserService {
     }
 
     const passwordSalt = process.env.PASSWORD_SALT;
-    user.hashed_password = await bcrypt.hash(password, passwordSalt);
+    user.hashedPassword = await bcrypt.hash(password, passwordSalt);
 
     try {
       await this.userRepository.save(user);
@@ -239,7 +250,7 @@ export class UserService {
     try {
       const forgotPasswordRecord = await this.forgotPasswordRepository
         .createQueryBuilder('forgot_password')
-        .where('forgot_password.user = :user', { user: user.user_id })
+        .where('forgot_password.user = :user', { user: user.userId })
         .andWhere('forgot_password.code = :code', { code: code })
         .orderBy('forgot_password.createdAt', 'DESC')
         .getOne();

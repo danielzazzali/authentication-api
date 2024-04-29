@@ -3,21 +3,21 @@ import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 @Entity('users')
 @Unique(['email', 'rut'])
 export class User {
-  @PrimaryGeneratedColumn()
-  user_id: number;
+  @PrimaryGeneratedColumn({ name: 'userId' })
+  userId: number;
 
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @Column({ name: 'email', type: 'varchar', unique: true, nullable: false })
   email: string;
 
-  @Column({ type: 'varchar', unique: true, nullable: true })
+  @Column({ name: 'rut', type: 'varchar', unique: true, nullable: true })
   rut: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  first_name: string;
+  @Column({ name: 'firstName', type: 'varchar', nullable: true })
+  firstName: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  last_name: string;
+  @Column({ name: 'lastName', type: 'varchar', nullable: true })
+  lastName: string;
 
-  @Column({ type: 'varchar', nullable: false })
-  hashed_password: string;
+  @Column({ name: 'hashedPassword', type: 'varchar', nullable: false })
+  hashedPassword: string;
 }
