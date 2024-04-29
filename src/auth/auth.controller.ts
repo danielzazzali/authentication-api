@@ -12,6 +12,10 @@ import { SignupUserDto } from './dto/signup-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ValidateResetCodeDto } from './dto/validate-reset-code.dto';
 import { User } from '../user/entities/user.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ChangePasswordResponseDto } from './dto/change-password-response.dto';
+import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response.dto';
+import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
 
 /**
  * AuthController is a controller that handles authentication related routes.
@@ -99,7 +103,9 @@ export class AuthController {
    * @throws {HttpException} If the user is not found, or an error occurs during the forgot password process.
    */
   @Post('forgot-password')
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<{ success: boolean, message: string }> {
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<ForgotPasswordResponseDto> {
     try {
       return await this.authService.forgotPassword(forgotPasswordDto);
     } catch (error) {
@@ -132,7 +138,9 @@ export class AuthController {
    * @throws {HttpException} If the user is not found, or an error occurs during the validate reset code process.
    */
   @Get('validate-reset-code')
-  async validateResetCode(@Body() validateResetCodeDto: ValidateResetCodeDto): Promise<{isValid: boolean}> {
+  async validateResetCode(
+    @Body() validateResetCodeDto: ValidateResetCodeDto,
+  ): Promise<ValidateResetCodeResponseDto> {
     try {
       return await this.authService.validateResetCode(validateResetCodeDto);
     } catch (error) {
@@ -147,6 +155,54 @@ export class AuthController {
       } else {
         throw new HttpException(
           'Error validating recovery code',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  /**
+   * Handles the change-password route.
+   * @async
+   * @param {ChangePasswordDto} changePasswordDto - The change password data transfer object.
+   * @returns {Promise} The result of the change password operation.
+   * @throws {HttpException} If the reset code is invalid, user is not found, passwords do not match,
+   * or an error occurs during the change password process.
+   */
+  @Post('change-password')
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<ChangePasswordResponseDto> {
+    try {
+      return await this.authService.changePassword(changePasswordDto);
+    } catch (error) {
+      if (error.message === 'Invalid reset code') {
+        throw new HttpException('Invalid reset code', HttpStatus.UNAUTHORIZED);
+      } else if (
+        error.message === `User with email ${changePasswordDto.email} not found`
+      ) {
+        throw new HttpException(
+          `User with email ${changePasswordDto.email} not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      } else if (error.message === 'Passwords do not match') {
+        throw new HttpException(
+          'Passwords do not match',
+          HttpStatus.BAD_REQUEST,
+        );
+      } else if (error.message === 'Error saving user password') {
+        throw new HttpException(
+          'Error saving user password',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      } else if (error.message === 'Error saving forgot password record') {
+        throw new HttpException(
+          'Error saving forgot password record',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      } else {
+        throw new HttpException(
+          'Error changing password',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }

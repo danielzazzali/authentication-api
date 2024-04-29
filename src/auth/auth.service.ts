@@ -5,6 +5,10 @@ import { SignupUserDto } from './dto/signup-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ValidateResetCodeDto } from './dto/validate-reset-code.dto';
 import { User } from '../user/entities/user.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ChangePasswordResponseDto } from './dto/change-password-response.dto';
+import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response.dto';
+import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
 
 /**
  * AuthService is a service that handles authentication related operations.
@@ -44,7 +48,9 @@ export class AuthService {
    * @param {ForgotPasswordDto} forgotPasswordDto - The forgot password data transfer object.
    * @returns {Promise} The result of the forgot password operation.
    */
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{success: boolean, message: string}> {
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<ForgotPasswordResponseDto> {
     return await this.userService.forgotPassword(forgotPasswordDto);
   }
 
@@ -54,7 +60,21 @@ export class AuthService {
    * @param {ValidateResetCodeDto} validateResetCodeDto - The validate reset code data transfer object.
    * @returns {Promise} The result of the validate reset code operation.
    */
-  async validateResetCode(validateResetCodeDto: ValidateResetCodeDto): Promise<{isValid: boolean}> {
+  async validateResetCode(
+    validateResetCodeDto: ValidateResetCodeDto,
+  ): Promise<ValidateResetCodeResponseDto> {
     return await this.userService.validateResetCode(validateResetCodeDto);
+  }
+
+  /**
+   * Handles the change password operation.
+   * @async
+   * @param {ChangePasswordDto} changePasswordDto - The change password data transfer object.
+   * @returns {Promise} The result of the change password operation.
+   */
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<ChangePasswordResponseDto> {
+    return await this.userService.changePassword(changePasswordDto);
   }
 }

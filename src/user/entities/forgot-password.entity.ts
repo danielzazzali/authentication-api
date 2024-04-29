@@ -26,4 +26,7 @@ export class ForgotPassword {
     default: () => `now() + INTERVAL '15 minutes'`,
   })
   validUntil: Date;
+
+  @Column({ type: 'boolean', default: false })
+  isUsed: boolean;
 }

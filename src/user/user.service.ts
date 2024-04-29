@@ -15,6 +15,10 @@ import {
   RESTORE_PASSWORD_CODE_TEXT,
 } from '../constants/constants';
 import { ValidateResetCodeDto } from '../auth/dto/validate-reset-code.dto';
+import { ChangePasswordDto } from '../auth/dto/change-password.dto';
+import { ForgotPasswordResponseDto } from '../auth/dto/forgot-password-response.dto';
+import { ValidateResetCodeResponseDto } from '../auth/dto/validate-reset-code-response.dto';
+import { ChangePasswordResponseDto } from '../auth/dto/change-password-response.dto';
 
 /**
  * UserService is a service that handles user related operations.
@@ -44,8 +48,7 @@ export class UserService {
    * @throws {Error} If the user already exists or an error occurs during signup.
    */
   async signup(signupUserDto: SignupUserDto): Promise<Partial<User>> {
-    const email = signupUserDto.email;
-    const rut = signupUserDto.rut;
+    const { email, rut } = signupUserDto;
 
     let existingUser = await this.userRepository.findOneBy({ email: email });
 
@@ -94,8 +97,7 @@ export class UserService {
    * @throws {Error} If the user is not found or the credentials are invalid.
    */
   async login(loginUserDto: LoginUserDto): Promise<Partial<User>> {
-    const email = loginUserDto.email;
-    const password = loginUserDto.password;
+    const { email, password } = loginUserDto;
 
     const user = await this.userRepository.findOneBy({ email: email });
     if (!user) {
@@ -122,8 +124,10 @@ export class UserService {
    * @returns {Promise<{ success: boolean, message: string }>} The result of the forgot password operation.
    * @throws {Error} If the user is not found or an error occurs during the forgot password process.
    */
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ success: boolean; message: string; }> {
-    const email = forgotPasswordDto.email;
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<ForgotPasswordResponseDto> {
+    const { email } = forgotPasswordDto;
 
     const user = await this.userRepository.findOneBy({ email: email });
     if (!user) {
@@ -152,7 +156,10 @@ export class UserService {
       RESTORE_PASSWORD_CODE_TEXT.replace('{code}', sixDigitsCode),
     );
 
-    return { success: true, message: 'Password reset requested successfully' };
+    return new ForgotPasswordResponseDto(
+      true,
+      'Password reset requested successfully',
+    );
   }
 
   /**
@@ -164,9 +171,8 @@ export class UserService {
    */
   async validateResetCode(
     validateResetCodeDto: ValidateResetCodeDto,
-  ): Promise<{ isValid: boolean }> {
-    const email = validateResetCodeDto.email;
-    const resetCode = validateResetCodeDto.code;
+  ): Promise<ValidateResetCodeResponseDto> {
+    const { email, code } = validateResetCodeDto;
 
     const user = await this.userRepository.findOneBy({ email: email });
     if (!user) {
@@ -176,21 +182,76 @@ export class UserService {
     const forgotPasswordRecord = await this.forgotPasswordRepository
       .createQueryBuilder('forgot_password')
       .where('forgot_password.user = :user', { user: user.user_id })
-      .andWhere('forgot_password.code = :code', { code: resetCode })
+      .andWhere('forgot_password.code = :code', { code: code })
+      .andWhere('forgot_password.isUsed = :isUsed', { isUsed: false })
       .orderBy('forgot_password.createdAt', 'DESC')
       .getOne();
 
     if (!forgotPasswordRecord) {
-      return { isValid: false };
+      return new ValidateResetCodeResponseDto(false);
     }
 
     const validUntil = forgotPasswordRecord.validUntil;
     const currentTime = new Date();
 
     if (currentTime <= validUntil) {
-      return { isValid: true };
+      return new ValidateResetCodeResponseDto(true);
     }
 
-    return { isValid: false };
+    return new ValidateResetCodeResponseDto(false);
+  }
+
+  /**
+   * Handles the validate reset code operation.
+   * @async
+   * @param {ChangePasswordDto} changePasswordDto - The change password data transfer object.
+   * @returns {Promise<{ isValid: boolean }>} The result of the validate reset code operation.
+   * @throws {Error} If the user is not found, passwords do not match, or an error occurs during the change password process.
+   */
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<ChangePasswordResponseDto> {
+    const { email, code, password, passwordConfirmation } = changePasswordDto;
+
+    const validation = await this.validateResetCode({ email, code });
+    if (!validation.isValid) {
+      throw new Error('Invalid reset code');
+    }
+
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      throw new Error(`User with email ${email} not found`);
+    }
+
+    if (password !== passwordConfirmation) {
+      throw new Error('Passwords do not match');
+    }
+
+    const passwordSalt = process.env.PASSWORD_SALT;
+    user.hashed_password = await bcrypt.hash(password, passwordSalt);
+
+    try {
+      await this.userRepository.save(user);
+    } catch (error) {
+      throw new Error('Error saving user password');
+    }
+
+    try {
+      const forgotPasswordRecord = await this.forgotPasswordRepository
+        .createQueryBuilder('forgot_password')
+        .where('forgot_password.user = :user', { user: user.user_id })
+        .andWhere('forgot_password.code = :code', { code: code })
+        .orderBy('forgot_password.createdAt', 'DESC')
+        .getOne();
+
+      if (forgotPasswordRecord) {
+        forgotPasswordRecord.isUsed = true;
+        await this.forgotPasswordRepository.save(forgotPasswordRecord);
+      }
+    } catch (error) {
+      throw new Error('Error saving forgot password record');
+    }
+
+    return new ChangePasswordResponseDto(true, 'Password changed successfully');
   }
 }
