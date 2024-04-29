@@ -1,4 +1,4 @@
-# Payment API
+# Authentication API
 
 ## Running the app locally
 

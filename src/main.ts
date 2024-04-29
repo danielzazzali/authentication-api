@@ -1,18 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import './config/config';
-import { LoggingMiddleware } from './middleware/logging.middleware';
+import * as express from 'express';
+import { INestApplication } from '@nestjs/common';
 
-const port = process.env.APP_PORT || 3000;
+/**
+ * The port on which the application will listen.
+ * @type {number}
+ */
+const port: number | 3000 = Number(process.env.APP_PORT) || 3000;
 
+/**
+ * The bootstrap function initializes the application.
+ * @async
+ */
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  /**
+   * The Nest application instance.
+   * @type {INestApplication}
+   */
+  const app: INestApplication = await NestFactory.create(AppModule);
 
   app.enableCors();
 
-  const loggingMiddleware = new LoggingMiddleware();
-
-  app.use(loggingMiddleware.use.bind(loggingMiddleware));
+  app.use(express.json());
 
   await app.listen(port);
 }

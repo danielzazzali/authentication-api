@@ -1,8 +1,18 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
+/**
+ * LoggingMiddleware is a middleware that logs the request and response details.
+ * @class
+ */
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
+  /**
+   * The middleware function that logs the request and response details.
+   * @param {Request} req - The request object.
+   * @param {Response} res - The response object.
+   * @param {NextFunction} next - The next function in the middleware chain.
+   */
   use(req: Request, res: Response, next: NextFunction) {
     console.log('---------------------------------------------');
     console.log(
@@ -18,13 +28,22 @@ export class LoggingMiddleware implements NestMiddleware {
     };
     console.log('Header:', JSON.stringify(relevantHeaders, null, 2));
 
-    console.log('Body:', JSON.stringify(req.body, null, 2) ?? 'No body', '\n');
+    console.log(
+      'Body:',
+      req.body ? JSON.stringify(req.body, null, 2) : 'No body',
+      '\n\n',
+    );
 
     const originalSend = res.send;
 
-    res.send = function (body) {
+    /**
+     * Overriding the send function of the response object to log the response body.
+     * @param {any} body - The response body.
+     * @returns {any} The result of the original send function.
+     */
+    res.send = function (body: any): any {
       const formattedBody = JSON.stringify(JSON.parse(body), null, 2);
-      console.log('Response:\n', formattedBody, '\n');
+      console.log('Response:', formattedBody, '\n');
       console.log('---------------------------------------------\n');
 
       return originalSend.call(this, body);
