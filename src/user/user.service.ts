@@ -4,9 +4,9 @@ import * as bcrypt from 'bcrypt';
 import '../config/config';
 import { User } from './entities/user.entity';
 import { ForgotPassword } from './entities/forgot-password.entity';
-import { LoginUserDto } from 'src/auth/dto/login-user.dto';
-import { SignupUserDto } from '../auth/dto/signup-user.dto';
-import { ForgotPasswordDto } from '../auth/dto/forgot-password.dto';
+import { LoginUserDto } from 'src/auth/dto/login-user/login-user.dto';
+import { SignupUserDto } from '../auth/dto/signup-user/signup-user.dto';
+import { ForgotPasswordDto } from '../auth/dto/forgot-password/forgot-password.dto';
 import { NotificationService } from '../notification/notification.service';
 import {
   RESTORE_PASSWORD_CODE_GENERATOR_LOWER_BOUND,
@@ -14,14 +14,14 @@ import {
   RESTORE_PASSWORD_CODE_SUBJECT_TEXT,
   RESTORE_PASSWORD_CODE_TEXT,
 } from '../constants/constants';
-import { ValidateResetCodeDto } from '../auth/dto/validate-reset-code.dto';
-import { ChangePasswordDto } from '../auth/dto/change-password.dto';
-import { ForgotPasswordResponseDto } from '../auth/dto/forgot-password-response.dto';
-import { ValidateResetCodeResponseDto } from '../auth/dto/validate-reset-code-response.dto';
-import { ChangePasswordResponseDto } from '../auth/dto/change-password-response.dto';
-import { AuthResponseDto } from '../auth/dto/auth-response.dto';
+import { ValidateResetCodeDto } from '../auth/dto/validate-reset-code/validate-reset-code.dto';
+import { ChangePasswordDto } from '../auth/dto/change-password/change-password.dto';
+import { ForgotPasswordResponseDto } from '../auth/dto/forgot-password-response/forgot-password-response.dto';
+import { ValidateResetCodeResponseDto } from '../auth/dto/validate-reset-code-response/validate-reset-code-response.dto';
+import { ChangePasswordResponseDto } from '../auth/dto/change-password-response/change-password-response.dto';
+import { AuthResponseDto } from '../auth/dto/auth-response/auth-response.dto';
 import { TokenService } from '../token/token.service';
-import { PayloadJwt } from '../auth/dto/payload-jwt.dto';
+import { PayloadJwt } from '../auth/dto/payload-jwt/payload-jwt.dto';
 
 /**
  * UserService is a service that handles user related operations.

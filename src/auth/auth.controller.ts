@@ -7,15 +7,15 @@ import {
   Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto } from './dto/login-user.dto';
-import { SignupUserDto } from './dto/signup-user.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ValidateResetCodeDto } from './dto/validate-reset-code.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { ChangePasswordResponseDto } from './dto/change-password-response.dto';
-import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response.dto';
-import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { LoginUserDto } from './dto/login-user/login-user.dto';
+import { SignupUserDto } from './dto/signup-user/signup-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password/forgot-password.dto';
+import { ValidateResetCodeDto } from './dto/validate-reset-code/validate-reset-code.dto';
+import { ChangePasswordDto } from './dto/change-password/change-password.dto';
+import { ChangePasswordResponseDto } from './dto/change-password-response/change-password-response.dto';
+import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response/validate-reset-code-response.dto';
+import { ForgotPasswordResponseDto } from './dto/forgot-password-response/forgot-password-response.dto';
+import { AuthResponseDto } from './dto/auth-response/auth-response.dto';
 
 /**
  * AuthController is a controller that handles authentication related routes.

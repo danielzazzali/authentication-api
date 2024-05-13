@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto } from './dto/login-user/login-user.dto';
 import { UserService } from '../user/user.service';
-import { SignupUserDto } from './dto/signup-user.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ValidateResetCodeDto } from './dto/validate-reset-code.dto';
+import { SignupUserDto } from './dto/signup-user/signup-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password/forgot-password.dto';
+import { ValidateResetCodeDto } from './dto/validate-reset-code/validate-reset-code.dto';
 import { User } from '../user/entities/user.entity';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { ChangePasswordResponseDto } from './dto/change-password-response.dto';
-import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response.dto';
-import { ForgotPasswordResponseDto } from './dto/forgot-password-response.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { ChangePasswordDto } from './dto/change-password/change-password.dto';
+import { ChangePasswordResponseDto } from './dto/change-password-response/change-password-response.dto';
+import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response/validate-reset-code-response.dto';
+import { ForgotPasswordResponseDto } from './dto/forgot-password-response/forgot-password-response.dto';
+import { AuthResponseDto } from './dto/auth-response/auth-response.dto';
 
 /**
  * AuthService is a service that handles authentication related operations.

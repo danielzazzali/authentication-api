@@ -60,4 +60,3 @@ Replace CONTAINER_ID with the container id:
 ```bash
 sudo docker stop CONTAINER_ID
 ```
-.
