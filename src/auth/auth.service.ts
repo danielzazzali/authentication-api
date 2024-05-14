@@ -4,7 +4,6 @@ import { UserService } from '../user/user.service';
 import { SignupUserDto } from './dto/signup-user/signup-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password/forgot-password.dto';
 import { ValidateResetCodeDto } from './dto/validate-reset-code/validate-reset-code.dto';
-import { User } from '../user/entities/user.entity';
 import { ChangePasswordDto } from './dto/change-password/change-password.dto';
 import { ChangePasswordResponseDto } from './dto/change-password-response/change-password-response.dto';
 import { ValidateResetCodeResponseDto } from './dto/validate-reset-code-response/validate-reset-code-response.dto';
